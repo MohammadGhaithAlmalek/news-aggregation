@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { NewsEntity } from '../entities/news.entity';
 
 @Injectable()
 export class NytProvider implements NewsProvider {
@@ -16,7 +17,7 @@ export class NytProvider implements NewsProvider {
     search?: string,
     category?: string,
     page: number = 1,
-  ): Promise<any> {
+  ): Promise<NewsEntity> {
     try {
       const response = await axios.get(
         'https://api.nytimes.com/svc/search/v2/articlesearch.json',

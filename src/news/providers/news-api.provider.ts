@@ -6,6 +6,7 @@ import {
 import * as NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
+import { NewsEntity } from '../entities/news.entity';
 
 @Injectable()
 export class NewsApiProvider implements NewsProvider {
@@ -22,7 +23,7 @@ export class NewsApiProvider implements NewsProvider {
     search?: string,
     category?: string,
     page: number = 1,
-  ) {
+  ): Promise<NewsEntity> {
     try {
       const requestParams: any = {
         q: search,

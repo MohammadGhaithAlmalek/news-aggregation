@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
 import Guardian from 'guardian-js';
+import { NewsEntity } from '../entities/news.entity';
 
 @Injectable()
 export class GuardianProvider implements NewsProvider {
@@ -18,7 +19,7 @@ export class GuardianProvider implements NewsProvider {
     search?: string,
     category?: string,
     page: number = 1,
-  ): Promise<any> {
+  ): Promise<NewsEntity> {
     try {
       const response = await this.guardian.content.search(search || '', {
         section: category || 'world',
