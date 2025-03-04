@@ -1,4 +1,4 @@
-                                        # News Aggregation backend
+#                                   News Aggregation backend
 
 
 ## Project Overview
@@ -8,11 +8,11 @@ This is a NestJS-based News API that fetches news from multiple sources while us
 
 
 ## Features 
-# 1-  JWT Authentication: Secure access with token-based authentication.
-# 2-  Rate Limiting: Prevents abuse (3 requests per 4 seconds).
-# 3-  Swagger API Docs:  Provides an interactive API documentation.
-# 4-  Input Validation
-# 5-  CORS Enabled
+ 1-  JWT Authentication: Secure access with token-based authentication.
+ 2-  Rate Limiting: Prevents abuse (3 requests per 4 seconds).
+ 3-  Swagger API Docs:  Provides an interactive API documentation.
+ 4-  Input Validation
+ 5-  CORS Enabled
 
 
 ## Setup & Installation
