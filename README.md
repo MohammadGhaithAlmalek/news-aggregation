@@ -31,7 +31,7 @@ REDIS_PORT
 5- open http://localhost:3000/api#/ in your browaer to explore the API
 
 
-##API Endpoints 
+## API Endpoints 
 1-Authentication:
 POST /auth/login
 POST /auth/signup
@@ -42,7 +42,7 @@ PUT /user/preferences
 GET /news
 
 
-###Technologies Used 
+## Technologies Used 
 NestJS (Backend Framework)
 PostgreSQL / Prisma (Database)
 ThrottlerModule (Rate Limiting)
