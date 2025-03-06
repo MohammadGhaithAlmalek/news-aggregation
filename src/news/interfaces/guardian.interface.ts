@@ -1,4 +1,3 @@
-// 📂 src/interfaces/guardian.interface.ts
 export interface GuardianArticle {
   id: string;
   webTitle: string;
