@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { NewsProviderFactory } from './providers/news-provider-factory';
+import { NewsEntity } from './entities/news.entity';
 
 @Injectable()
 export class NewsService {
@@ -20,7 +21,7 @@ export class NewsService {
     }
 
     try {
-      const results: any[] = [];
+      const results: NewsEntity[] = [];
 
       for (const source of preferredSources) {
         const provider = this.newsProviderFactory.getProvider(source);

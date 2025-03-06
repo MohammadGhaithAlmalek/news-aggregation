@@ -3,14 +3,20 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import * as NewsAPI from 'newsapi';
+import NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
+import {
+  NewsApiArticle,
+  NewsApiResponse,
+} from '../interfaces/newsapi.interface';
+import { NewsApiRequestParams } from '../interfaces/news-api-request-params';
 
 @Injectable()
 export class NewsApiProvider implements NewsProvider {
   private readonly NewsAPI: string | undefined;
+
   constructor(
     private readonly configService: ConfigService,
     @Inject('NewsAPI') private readonly newsapi: NewsAPI,
@@ -19,13 +25,13 @@ export class NewsApiProvider implements NewsProvider {
   }
 
   async getNews(
-    preferredSources: string[],
+    preferredSources: string[] = [],
     search?: string,
     category?: string,
     page: number = 1,
-  ): Promise<NewsEntity> {
+  ): Promise<NewsEntity[]> {
     try {
-      const requestParams: any = {
+      const requestParams: NewsApiRequestParams = {
         q: search,
         language: 'en',
         page: page,
@@ -35,13 +41,17 @@ export class NewsApiProvider implements NewsProvider {
       if (category) {
         requestParams.category = category;
         requestParams.country = 'us';
-      } else if (preferredSources.length) {
+      }
+
+      if (preferredSources.length) {
         requestParams.sources = preferredSources.join(',');
       }
 
-      const response = await this.newsapi.v2.topHeadlines(requestParams);
+      const response = (await this.newsapi.v2.topHeadlines(
+        requestParams,
+      )) as NewsApiResponse;
 
-      return response.articles.map((article) => ({
+      return response.articles.map((article: NewsApiArticle) => ({
         id: article.source.id,
         title: article.title,
         description: article.description || 'No description available',

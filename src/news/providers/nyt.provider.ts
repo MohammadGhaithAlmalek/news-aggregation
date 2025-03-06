@@ -3,6 +3,7 @@ import { NewsProvider } from '../interfaces/news-provider.interface';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
+import { NytArticle, NytResponse } from '../interfaces/nyt.interface'; // استيراد الواجهة
 
 @Injectable()
 export class NytProvider implements NewsProvider {
@@ -17,7 +18,7 @@ export class NytProvider implements NewsProvider {
     search?: string,
     category?: string,
     page: number = 1,
-  ): Promise<NewsEntity> {
+  ): Promise<NewsEntity[]> {
     try {
       const response = await axios.get(
         'https://api.nytimes.com/svc/search/v2/articlesearch.json',
@@ -30,8 +31,9 @@ export class NytProvider implements NewsProvider {
         },
       );
 
-      // Assuming the NYT API returns articles in response.data.response.docs
-      return response.data.response.docs.map((article) => ({
+      const nytResponse = response.data as NytResponse;
+
+      return nytResponse.response.docs.map((article: NytArticle) => ({
         id: article._id,
         title: article.headline.main,
         description: article.abstract || 'No description available',

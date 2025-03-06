@@ -7,7 +7,7 @@ import { NewsProviderFactory } from './providers/news-provider-factory';
 import { NewsApiProvider } from './providers/news-api.provider';
 import { GuardianProvider } from './providers/guardian.provider';
 import { NytProvider } from './providers/nyt.provider';
-import * as NewsAPI from 'newsapi';
+import NewsAPI from 'newsapi';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
 @Module({
@@ -16,8 +16,11 @@ import { ThrottlerGuard } from '@nestjs/throttler';
     ConfigService,
     {
       provide: 'NewsAPI',
-      useFactory: (configService: ConfigService) => {
-        return new NewsAPI(configService.get<string>('NEWS_API_KEY'));
+      useFactory: (configService: ConfigService): NewsAPI => {
+        const apiKey = configService.get<string>('NEWS_API_KEY');
+        if (!apiKey) {
+          throw new Error('NEWS_API_KEY is not defined');
+        }
       },
       inject: [ConfigService],
     },
