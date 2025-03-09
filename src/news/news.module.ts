@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { NewsService } from './news.service';
+import { NewsService } from './services/news.service';
 import { NewsController } from './news.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from 'src/users/users.module';
@@ -9,11 +9,14 @@ import { GuardianProvider } from './providers/guardian.provider';
 import { NytProvider } from './providers/nyt.provider';
 import NewsAPI from 'newsapi';
 import { APP_GUARD } from '@nestjs/core';
+import Guardian from 'guardian-js';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiKeyService } from './services/api-key.service';
 @Module({
   controllers: [NewsController],
   providers: [
     ConfigService,
+    ApiKeyService,
     {
       provide: 'NewsAPI',
       useFactory: (configService: ConfigService): NewsAPI => {
@@ -21,6 +24,17 @@ import { ThrottlerGuard } from '@nestjs/throttler';
         if (!apiKey) {
           throw new Error('NEWS_API_KEY is not defined');
         }
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: 'GuardianAPI',
+      useFactory: (configService: ConfigService): Guardian => {
+        const apiKey = configService.get<string>('GUARDIAN_NEWS_KEY');
+        if (!apiKey) {
+          throw new Error('GUARDIAN_NEWS_KEY is not defined');
+        }
+        return new Guardian(apiKey, true);
       },
       inject: [ConfigService],
     },

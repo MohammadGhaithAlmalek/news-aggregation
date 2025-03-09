@@ -1,30 +1,20 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
-import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
 import { NewsApiResponse } from '../interfaces/newsapi.interface';
 import { NewsApiRequestParams } from '../interfaces/news-api-request-params';
 import { mapNewsApiArticle } from '../mappers/newsapi.mapper';
+import { ApiKeyService } from '../services/api-key.service';
 
 @Injectable()
 export class NewsApiProvider implements NewsProvider {
-  private readonly NewsAPI: string | undefined;
-
   constructor(
-    private readonly configService: ConfigService,
     @Inject('NewsAPI') private readonly newsapi: NewsAPI,
+    private readonly apiKeyService: ApiKeyService,
   ) {
-    const apiKey = this.configService.get<string>('NEWS_API_KEY');
-    if (!apiKey) {
-      throw new UnauthorizedException('Missing NewsAPI key');
-    }
-    this.NewsAPI = apiKey;
+    const apiKey = this.apiKeyService.getApiKey('NEWS_API_KEY');
+    this.newsapi = apiKey;
   }
 
   async getNews(

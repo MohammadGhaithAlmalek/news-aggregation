@@ -3,8 +3,8 @@ import {
   UnauthorizedException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { NewsProviderFactory } from './providers/news-provider-factory';
-import { NewsEntity } from './entities/news.entity';
+import { NewsProviderFactory } from '../providers/news-provider-factory';
+import { NewsEntity } from '../entities/news.entity';
 
 @Injectable()
 export class NewsService {

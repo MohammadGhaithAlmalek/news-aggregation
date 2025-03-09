@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { NewsService } from './news.service';
+import { NewsService } from './services/news.service';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { UsersService } from 'src/users/users.service';

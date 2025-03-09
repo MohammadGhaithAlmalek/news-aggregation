@@ -8,8 +8,7 @@ import { mapNytArticle } from '../mappers/nyt.mapper';
 
 @Injectable()
 export class NytProvider implements NewsProvider {
-  private readonly nytApiKey: string | undefined;
-
+  private readonly nytApiKey: string;
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('NYT_NEWS_KEY');
     if (!apiKey) {
