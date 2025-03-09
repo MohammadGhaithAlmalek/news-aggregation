@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import NewsAPI from 'newsapi';
+import * as NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { NewsEntity } from '../entities/news.entity';
 import { NewsApiResponse } from '../interfaces/newsapi.interface';
@@ -14,7 +14,7 @@ export class NewsApiProvider implements NewsProvider {
     private readonly apiKeyService: ApiKeyService,
   ) {
     const apiKey = this.apiKeyService.getApiKey('NEWS_API_KEY');
-    this.newsapi = apiKey;
+    this.newsapi = new NewsAPI(apiKey);
   }
 
   async getNews(

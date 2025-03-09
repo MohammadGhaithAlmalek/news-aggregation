@@ -9,5 +9,5 @@ export class UpdateUserPreferencesDto {
   })
   @IsArray()
   @IsEnum(PreferredSourcesEnum, { each: true })
-  preferredSources: string[];
+  preferredSources: PreferredSourcesEnum[];
 }

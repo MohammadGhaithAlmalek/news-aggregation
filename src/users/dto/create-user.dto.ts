@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsString } from 'class-validator';
+import { PreferredSourcesEnum } from '../enums/user-preferences.enum';
 export class CreateUserDto {
   @ApiProperty({ type: String, default: 'example@gmail.com' })
   @IsEmail()
@@ -11,6 +12,6 @@ export class CreateUserDto {
     example: ['bbc-news', 'cbc-news', 'nyt', 'guardian'],
   })
   @IsArray()
-  @IsString({ each: true })
-  preferredSources: string[];
+  @IsEnum(PreferredSourcesEnum, { each: true })
+  preferredSources: PreferredSourcesEnum[];
 }

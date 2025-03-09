@@ -1,6 +1,6 @@
 export enum PreferredSourcesEnum {
-  BBC = 'BBC',
-  CBC = 'CBC',
-  TheNewYorkTimes = 'The New York Times',
-  TheGuardian = 'The Guardian',
+  bbc_news = 'bbc-news',
+  cbc_news = 'cbc-news',
+  nyt = 'nyt',
+  guardian = 'guardian',
 }
