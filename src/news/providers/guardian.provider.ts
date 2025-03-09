@@ -3,10 +3,8 @@ import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
 import Guardian from 'guardian-js';
 import { NewsEntity } from '../entities/news.entity';
-import {
-  GuardianArticle,
-  GuardianResponse,
-} from '../interfaces/guardian.interface';
+import { GuardianResponse } from '../interfaces/guardian.interface';
+import { mapGuardianArticle } from '../mappers/guardian.mapper';
 
 @Injectable()
 export class GuardianProvider implements NewsProvider {
@@ -31,22 +29,7 @@ export class GuardianProvider implements NewsProvider {
         'show-fields': 'trailText,byline,thumbnail',
       })) as GuardianResponse;
 
-      return response.results.map(
-        (article: GuardianArticle) =>
-          new NewsEntity({
-            id: article.id,
-            title: article.webTitle,
-            description:
-              article.fields?.trailText || 'No description available',
-            author: article.fields?.byline || 'Unknown',
-            url: article.webUrl,
-            source: 'The Guardian',
-            category: category || 'General',
-            publishedAt: new Date(article.webPublicationDate),
-            thumbnail: article.fields?.thumbnail || '',
-            createdAt: new Date(),
-          }),
-      );
+      return response.results.map(mapGuardianArticle);
     } catch (error) {
       console.error('Error fetching news from The Guardian:', error);
       throw new Error('Failed to fetch news from The Guardian API.');

@@ -3,7 +3,8 @@ import { NewsProvider } from '../interfaces/news-provider.interface';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
-import { NytArticle, NytResponse } from '../interfaces/nyt.interface'; // استيراد الواجهة
+import { NytResponse } from '../interfaces/nyt.interface';
+import { mapNytArticle } from '../mappers/nyt.mapper';
 
 @Injectable()
 export class NytProvider implements NewsProvider {
@@ -33,20 +34,7 @@ export class NytProvider implements NewsProvider {
 
       const nytResponse = response.data as NytResponse;
 
-      return nytResponse.response.docs.map((article: NytArticle) => ({
-        id: article._id,
-        title: article.headline.main,
-        description: article.abstract || 'No description available',
-        author: article.byline?.original || 'Unknown',
-        url: article.web_url,
-        source: 'New York Times',
-        category: category || 'General',
-        publishedAt: new Date(article.pub_date),
-        thumbnail: article.multimedia?.[0]?.url
-          ? `https://static01.nyt.com/${article.multimedia[0].url}`
-          : '',
-        createdAt: new Date(),
-      }));
+      return nytResponse.response.docs.map(mapNytArticle);
     } catch (error) {
       console.error('Error fetching news from The New York Times:', error);
       throw new Error('Failed to fetch news from NYT.');

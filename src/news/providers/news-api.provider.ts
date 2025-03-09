@@ -7,11 +7,9 @@ import NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
-import {
-  NewsApiArticle,
-  NewsApiResponse,
-} from '../interfaces/newsapi.interface';
+import { NewsApiResponse } from '../interfaces/newsapi.interface';
 import { NewsApiRequestParams } from '../interfaces/news-api-request-params';
+import { mapNewsApiArticle } from '../mappers/newsapi.mapper';
 
 @Injectable()
 export class NewsApiProvider implements NewsProvider {
@@ -51,18 +49,7 @@ export class NewsApiProvider implements NewsProvider {
         requestParams,
       )) as NewsApiResponse;
 
-      return response.articles.map((article: NewsApiArticle) => ({
-        id: article.source.id,
-        title: article.title,
-        description: article.description || 'No description available',
-        author: article.author || 'Unknown',
-        url: article.url,
-        source: article.source.name,
-        category: category || 'General',
-        publishedAt: new Date(article.publishedAt),
-        thumbnail: article.urlToImage || '',
-        createdAt: new Date(),
-      }));
+      return response.articles.map(mapNewsApiArticle);
     } catch (error) {
       console.error('Error fetching news:', error);
       throw new InternalServerErrorException(
