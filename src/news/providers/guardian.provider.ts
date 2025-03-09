@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { NewsProvider } from '../interfaces/news-provider.interface';
 import { ConfigService } from '@nestjs/config';
 import Guardian from 'guardian-js';
@@ -11,8 +11,10 @@ export class GuardianProvider implements NewsProvider {
   private guardian: Guardian;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey: string =
-      this.configService.get<string>('GUARDIAN_NEWS_KEY') || '';
+    const apiKey = this.configService.get<string>('GUARDIAN_NEWS_KEY');
+    if (!apiKey) {
+      throw new UnauthorizedException('Missing Guardian API key');
+    }
     this.guardian = new Guardian(apiKey, true);
   }
 
@@ -22,17 +24,12 @@ export class GuardianProvider implements NewsProvider {
     category?: string,
     page: number = 1,
   ): Promise<NewsEntity[]> {
-    try {
-      const response = (await this.guardian.content.search(search || '', {
-        section: category || 'world',
-        page: page,
-        'show-fields': 'trailText,byline,thumbnail',
-      })) as GuardianResponse;
+    const response = (await this.guardian.content.search(search || '', {
+      section: category || 'world',
+      page: page,
+      'show-fields': 'trailText,byline,thumbnail',
+    })) as GuardianResponse;
 
-      return response.results.map(mapGuardianArticle);
-    } catch (error) {
-      console.error('Error fetching news from The Guardian:', error);
-      throw new Error('Failed to fetch news from The Guardian API.');
-    }
+    return response.results.map(mapGuardianArticle);
   }
 }

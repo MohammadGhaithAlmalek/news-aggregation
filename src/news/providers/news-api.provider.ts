@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import NewsAPI from 'newsapi';
 import { NewsProvider } from '../interfaces/news-provider.interface';
@@ -19,7 +20,11 @@ export class NewsApiProvider implements NewsProvider {
     private readonly configService: ConfigService,
     @Inject('NewsAPI') private readonly newsapi: NewsAPI,
   ) {
-    this.NewsAPI = this.configService.get<string>('NEWS_API_KEY');
+    const apiKey = this.configService.get<string>('NEWS_API_KEY');
+    if (!apiKey) {
+      throw new UnauthorizedException('Missing NewsAPI key');
+    }
+    this.NewsAPI = apiKey;
   }
 
   async getNews(
@@ -28,33 +33,26 @@ export class NewsApiProvider implements NewsProvider {
     category?: string,
     page: number = 1,
   ): Promise<NewsEntity[]> {
-    try {
-      const requestParams: NewsApiRequestParams = {
-        q: search,
-        language: 'en',
-        page: page,
-        pageSize: 10,
-      };
+    const requestParams: NewsApiRequestParams = {
+      q: search,
+      language: 'en',
+      page: page,
+      pageSize: 10,
+    };
 
-      if (category) {
-        requestParams.category = category;
-        requestParams.country = 'us';
-      }
-
-      if (preferredSources.length) {
-        requestParams.sources = preferredSources.join(',');
-      }
-
-      const response = (await this.newsapi.v2.topHeadlines(
-        requestParams,
-      )) as NewsApiResponse;
-
-      return response.articles.map(mapNewsApiArticle);
-    } catch (error) {
-      console.error('Error fetching news:', error);
-      throw new InternalServerErrorException(
-        'Failed to fetch news from NewsAPI.',
-      );
+    if (category) {
+      requestParams.category = category;
+      requestParams.country = 'us';
     }
+
+    if (preferredSources.length) {
+      requestParams.sources = preferredSources.join(',');
+    }
+
+    const response = (await this.newsapi.v2.topHeadlines(
+      requestParams,
+    )) as NewsApiResponse;
+
+    return response.articles.map(mapNewsApiArticle);
   }
 }
