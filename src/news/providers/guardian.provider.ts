@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { NewsProvider } from '../interfaces/news-provider.interface';
+import { NewsProvider } from './news-provider.interface';
 import { ApiKeyService } from '../services/api-key.service';
 import Guardian from 'guardian-js';
 import { NewsEntity } from '../entities/news.entity';
@@ -17,7 +17,6 @@ export class GuardianProvider implements NewsProvider {
   }
 
   async getNews(
-    preferredSources: string[],
     search?: string,
     category?: string,
     page: number = 1,

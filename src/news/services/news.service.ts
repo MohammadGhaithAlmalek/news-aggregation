@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { NewsProviderFactory } from '../providers/news-provider-factory';
 import { NewsEntity } from '../entities/news.entity';
 
@@ -17,7 +13,7 @@ export class NewsService {
     page: number = 1,
   ) {
     if (!preferredSources || preferredSources.length === 0) {
-      throw new UnauthorizedException('User has no preferred sources.');
+      throw new NotFoundException('User has no preferred sources.');
     }
 
     try {
@@ -25,21 +21,13 @@ export class NewsService {
 
       for (const source of preferredSources) {
         const provider = this.newsProviderFactory.getProvider(source);
-        const providerResults = await provider.getNews(
-          preferredSources,
-          search,
-          category,
-          page,
-        );
+        const providerResults = await provider.getNews(search, category, page);
         results.push(...providerResults);
       }
 
       return results;
     } catch (error) {
       console.error('Error fetching news:', error);
-      throw new InternalServerErrorException(
-        'Failed to fetch news from the selected sources.',
-      );
     }
   }
 }

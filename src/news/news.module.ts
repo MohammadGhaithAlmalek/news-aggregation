@@ -4,10 +4,10 @@ import { NewsController } from './news.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from 'src/users/users.module';
 import { NewsProviderFactory } from './providers/news-provider-factory';
-import { NewsApiProvider } from './providers/news-api.provider';
+import { NewsApiProvider } from './providers/bbc.provider';
 import { GuardianProvider } from './providers/guardian.provider';
 import { NytProvider } from './providers/nyt.provider';
-import NewsAPI from 'newsapi';
+import NewsAPI from 'ts-newsapi';
 import { APP_GUARD } from '@nestjs/core';
 import Guardian from 'guardian-js';
 import { ThrottlerGuard } from '@nestjs/throttler';
@@ -24,6 +24,7 @@ import { ApiKeyService } from './services/api-key.service';
         if (!apiKey) {
           throw new Error('NEWS_API_KEY is not defined');
         }
+        return new NewsAPI(apiKey);
       },
       inject: [ConfigService],
     },

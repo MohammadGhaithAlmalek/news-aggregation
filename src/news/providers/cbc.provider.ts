@@ -1,26 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as NewsAPI from 'newsapi';
-import { NewsProvider } from '../interfaces/news-provider.interface';
+import NewsAPI from 'ts-newsapi';
+import { NewsProvider } from './news-provider.interface';
 import { NewsEntity } from '../entities/news.entity';
 import { NewsApiResponse } from '../interfaces/newsapi.interface';
-import { NewsApiRequestParams } from '../interfaces/news-api-request-params';
+import {
+  NewsApiRequestParams,
+  ApiNewsCategory,
+} from '../interfaces/news-api-request-params';
 import { mapNewsApiArticle } from '../mappers/newsapi.mapper';
 import { ApiKeyService } from '../services/api-key.service';
 
 @Injectable()
-export class NewsApiProvider implements NewsProvider {
+export class CbcProvider implements NewsProvider {
   constructor(
     @Inject('NewsAPI') private readonly newsapi: NewsAPI,
     private readonly apiKeyService: ApiKeyService,
   ) {
-    const apiKey = this.apiKeyService.getApiKey('NEWS_API_KEY');
+    const apiKey = this.apiKeyService.getApiKey('BBC_API_KEY');
     this.newsapi = new NewsAPI(apiKey);
   }
 
   async getNews(
-    preferredSources: string[] = [],
     search?: string,
-    category?: string,
+    category?: ApiNewsCategory,
     page: number = 1,
   ): Promise<NewsEntity[]> {
     const requestParams: NewsApiRequestParams = {
@@ -28,18 +30,13 @@ export class NewsApiProvider implements NewsProvider {
       language: 'en',
       page: page,
       pageSize: 10,
+      sources: ['cbc-news'],
     };
 
     if (category) {
       requestParams.category = category;
-      requestParams.country = 'us';
     }
-
-    if (preferredSources.length) {
-      requestParams.sources = preferredSources.join(',');
-    }
-
-    const response = (await this.newsapi.v2.topHeadlines(
+    const response = (await this.newsapi.getTopHeadlines(
       requestParams,
     )) as NewsApiResponse;
 

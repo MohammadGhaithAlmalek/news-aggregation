@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { NewsProvider } from '../interfaces/news-provider.interface';
+import { NewsProvider } from './news-provider.interface';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { NewsEntity } from '../entities/news.entity';
@@ -18,7 +18,6 @@ export class NytProvider implements NewsProvider {
   }
 
   async getNews(
-    preferredSources: string[],
     search?: string,
     category?: string,
     page: number = 1,
