@@ -5,12 +5,15 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { NewsService } from './services/news.service';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { UsersService } from 'src/users/users.service';
 import { seconds, Throttle } from '@nestjs/throttler';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+@UseInterceptors(CacheInterceptor)
 @ApiTags('news')
 @ApiBearerAuth()
 @Controller('news')
@@ -37,6 +40,7 @@ export class NewsController {
     }
 
     return await this.newsService.getNews(
+      user.id,
       user.preferredSources,
       search,
       category,

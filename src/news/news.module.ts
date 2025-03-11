@@ -4,7 +4,7 @@ import { NewsController } from './news.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from 'src/users/users.module';
 import { NewsProviderFactory } from './providers/news-provider-factory';
-import { NewsApiProvider } from './providers/bbc.provider';
+import { BbcProvider } from './providers/bbc.provider';
 import { GuardianProvider } from './providers/guardian.provider';
 import { NytProvider } from './providers/nyt.provider';
 import NewsAPI from 'ts-newsapi';
@@ -12,17 +12,31 @@ import { APP_GUARD } from '@nestjs/core';
 import Guardian from 'guardian-js';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ApiKeyService } from './services/api-key.service';
+import { CbcProvider } from './providers/cbc.provider';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 @Module({
   controllers: [NewsController],
   providers: [
     ConfigService,
     ApiKeyService,
     {
-      provide: 'NewsAPI',
+      provide: 'BBC_API',
       useFactory: (configService: ConfigService): NewsAPI => {
-        const apiKey = configService.get<string>('NEWS_API_KEY');
+        const apiKey = configService.get<string>('BBC_API_KEY');
         if (!apiKey) {
-          throw new Error('NEWS_API_KEY is not defined');
+          throw new Error('BBC_API_KEY is not defined');
+        }
+        return new NewsAPI(apiKey);
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: 'CBC_API',
+      useFactory: (configService: ConfigService): NewsAPI => {
+        const apiKey = configService.get<string>('CBC_API_KEY');
+        if (!apiKey) {
+          throw new Error('CBC_API_KEY is not defined');
         }
         return new NewsAPI(apiKey);
       },
@@ -41,7 +55,8 @@ import { ApiKeyService } from './services/api-key.service';
     },
     NewsService,
     NewsProviderFactory,
-    NewsApiProvider,
+    BbcProvider,
+    CbcProvider,
     GuardianProvider,
     NytProvider,
     {
@@ -49,6 +64,22 @@ import { ApiKeyService } from './services/api-key.service';
       useClass: ThrottlerGuard,
     },
   ],
-  imports: [ConfigModule, UsersModule],
+  imports: [
+    ConfigModule,
+    UsersModule,
+    CacheModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const store = await redisStore({
+          ttl: 300,
+          socket: {
+            host: config.get('redis.host'),
+            port: config.get('redis.port'),
+          },
+        });
+        return { store };
+      },
+    }),
+  ],
 })
 export class NewsModule {}

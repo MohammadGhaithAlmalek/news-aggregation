@@ -13,7 +13,7 @@ import { ApiKeyService } from '../services/api-key.service';
 @Injectable()
 export class CbcProvider implements NewsProvider {
   constructor(
-    @Inject('NewsAPI') private readonly newsapi: NewsAPI,
+    @Inject('CBC_API') private readonly newsapi: NewsAPI,
     private readonly apiKeyService: ApiKeyService,
   ) {
     const apiKey = this.apiKeyService.getApiKey('BBC_API_KEY');
