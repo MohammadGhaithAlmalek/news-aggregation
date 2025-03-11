@@ -14,7 +14,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { ApiKeyService } from './services/api-key.service';
 import { CbcProvider } from './providers/cbc.provider';
 import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-yet';
+import { RedisOptions } from 'src/configs/app-options.constants';
 @Module({
   controllers: [NewsController],
   providers: [
@@ -64,22 +64,6 @@ import { redisStore } from 'cache-manager-redis-yet';
       useClass: ThrottlerGuard,
     },
   ],
-  imports: [
-    ConfigModule,
-    UsersModule,
-    CacheModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        const store = await redisStore({
-          ttl: 300,
-          socket: {
-            host: config.get('redis.host'),
-            port: config.get('redis.port'),
-          },
-        });
-        return { store };
-      },
-    }),
-  ],
+  imports: [ConfigModule, UsersModule, CacheModule.registerAsync(RedisOptions)],
 })
 export class NewsModule {}

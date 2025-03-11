@@ -13,7 +13,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { UsersService } from 'src/users/users.service';
 import { seconds, Throttle } from '@nestjs/throttler';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-@UseInterceptors(CacheInterceptor)
+//@UseInterceptors(CacheInterceptor)
 @ApiTags('news')
 @ApiBearerAuth()
 @Controller('news')
