@@ -7,11 +7,8 @@ import { NewsProviderFactory } from './providers/news-provider-factory';
 import { BbcProvider } from './providers/bbc.provider';
 import { GuardianProvider } from './providers/guardian.provider';
 import { NytProvider } from './providers/nyt.provider';
-import NewsAPI from 'ts-newsapi';
 import { APP_GUARD } from '@nestjs/core';
-import Guardian from 'guardian-js';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { ApiKeyService } from './services/api-key.service';
 import { CbcProvider } from './providers/cbc.provider';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from 'src/configs/app-options.constants';
@@ -19,40 +16,6 @@ import { RedisOptions } from 'src/configs/app-options.constants';
   controllers: [NewsController],
   providers: [
     ConfigService,
-    ApiKeyService,
-    {
-      provide: 'BBC_API',
-      useFactory: (configService: ConfigService): NewsAPI => {
-        const apiKey = configService.get<string>('BBC_API_KEY');
-        if (!apiKey) {
-          throw new Error('BBC_API_KEY is not defined');
-        }
-        return new NewsAPI(apiKey);
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: 'CBC_API',
-      useFactory: (configService: ConfigService): NewsAPI => {
-        const apiKey = configService.get<string>('CBC_API_KEY');
-        if (!apiKey) {
-          throw new Error('CBC_API_KEY is not defined');
-        }
-        return new NewsAPI(apiKey);
-      },
-      inject: [ConfigService],
-    },
-    {
-      provide: 'GuardianAPI',
-      useFactory: (configService: ConfigService): Guardian => {
-        const apiKey = configService.get<string>('GUARDIAN_NEWS_KEY');
-        if (!apiKey) {
-          throw new Error('GUARDIAN_NEWS_KEY is not defined');
-        }
-        return new Guardian(apiKey, true);
-      },
-      inject: [ConfigService],
-    },
     NewsService,
     NewsProviderFactory,
     BbcProvider,
