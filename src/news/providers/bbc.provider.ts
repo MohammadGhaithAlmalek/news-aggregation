@@ -44,5 +44,3 @@ export class BbcProvider implements NewsProvider {
     return response.articles.map(mapNewsApiArticle);
   }
 }
-//repository pattern nestjs
-//leetcode

@@ -13,7 +13,7 @@ export class UsersController {
   async getPreferences(
     @Req() req: { user: { userId: number } },
   ): Promise<string[]> {
-    return await this.usersService.getUserPrefernces(req.user.userId);
+    return await this.usersService.getUserPreferences(req.user.userId);
   }
   @Put('preferences')
   @UseGuards(JwtAuthGuard)
