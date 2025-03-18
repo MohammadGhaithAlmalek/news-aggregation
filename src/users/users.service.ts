@@ -1,36 +1,36 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { SignUpReturnType } from '../auth/interfaces/auth.interface';
-import { MemberEntity } from '../auth/entities/member.entity';
+import { UserEntity } from './entities/user.entity';
 import { PasswordService } from 'src/auth/services/password.service';
 import { UpdateUserPreferencesDto } from './dto/update-user-preferences.dto';
-import { UserRepository } from './repositories/user.repository';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from './repositories/user.repository';
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly userRepository: UserRepository,
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
     private passwordService: PasswordService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<SignUpReturnType> {
-    const existingUser = await this.userRepository.findByEmail(
-      createUserDto.email,
-    );
-    if (existingUser) {
-      throw new UnauthorizedException('Email is already in use!');
+  async createUser(createUserDto: CreateUserDto): Promise<Partial<UserEntity>> {
+    const user = await this.findByEmail(createUserDto.email);
+    if (user) {
+      throw new UnauthorizedException('email is already exist');
     }
-    createUserDto.password = await this.passwordService.hash(
+    const hashedPassword = await this.passwordService.hash(
       createUserDto.password,
     );
-    const user = await this.userRepository.createUser(createUserDto);
-    return { user: new MemberEntity(user) };
+
+    return this.userRepository.createUser(createUserDto, hashedPassword);
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository.findByEmail(email);
   }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<Partial<UserEntity>> {
     return this.userRepository.findById(id);
   }
 

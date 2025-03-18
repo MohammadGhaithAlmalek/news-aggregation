@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { PrismaService } from './common/prisma/services/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { NewsModule } from './news/news.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrismaModule } from './common/prisma/prisma.module';
 @Module({
   imports: [
+    PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot({
       throttlers: [
@@ -23,6 +24,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
     NewsModule,
   ],
   controllers: [],
-  providers: [PrismaService],
+  providers: [],
 })
 export class AppModule {}

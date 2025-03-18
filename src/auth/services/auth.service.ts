@@ -4,7 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { LoginReturnType } from '../interfaces/auth.interface';
 import { TokenService } from './TokenService';
-import { MemberEntity } from '../entities/member.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,7 +23,7 @@ export class AuthService {
       throw new UnauthorizedException('passwor incorrect');
     const token = await this.tokenService.signPayload({ id: user.id });
     return {
-      user: new MemberEntity(user),
+      user: new UserEntity(user).toJSON(),
       token,
     };
   }

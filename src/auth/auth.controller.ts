@@ -1,8 +1,9 @@
+import { UserEntity } from '../users/entities/user.entity';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './../users/users.service';
 import { Controller, Post, Body } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { LoginReturnType, SignUpReturnType } from './interfaces/auth.interface';
+import { LoginReturnType } from './interfaces/auth.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
 @ApiTags('auth')
@@ -16,7 +17,7 @@ export class AuthController {
   @Post('signup')
   async signup(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<SignUpReturnType> {
+  ): Promise<Partial<UserEntity>> {
     return await this.usersService.createUser(createUserDto);
   }
 

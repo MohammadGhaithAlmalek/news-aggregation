@@ -1,8 +1,6 @@
-import { MemberEntity } from '../entities/member.entity';
-export interface SignUpReturnType {
-  user: MemberEntity;
-}
+import { UserEntity } from '../../users/entities/user.entity';
+
 export interface LoginReturnType {
-  user: MemberEntity;
+  user: ReturnType<UserEntity['toJSON']>;
   token: string;
 }

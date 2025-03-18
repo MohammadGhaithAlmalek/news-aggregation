@@ -1,52 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'src/common/prisma/services/prisma.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserPreferencesDto } from '../dto/update-user-preferences.dto';
-import { userSelectValidator } from '../validators/user.select';
+import { UserEntity } from '../entities/user.entity';
 
-@Injectable()
-export class UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+export interface UserRepository {
+  createUser(
+    createUserDto: CreateUserDto,
+    hashedPassword: string,
+  ): Promise<Partial<UserEntity>>;
 
-  async createUser(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: {
-        email: createUserDto.email,
-        password: createUserDto.password,
-        preferredSources: createUserDto.preferredSources,
-      },
-    });
-  }
+  findByEmail(email: string): Promise<UserEntity | null>;
 
-  async findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
-      select: userSelectValidator(),
-    });
-  }
+  findById(id: number): Promise<Partial<UserEntity>>;
 
-  async findById(id: number) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new UnauthorizedException(`User with ID ${id} not found`);
-    }
-    return user;
-  }
+  getUserPreferences(id: number): Promise<string[]>;
 
-  async getUserPreferences(id: number): Promise<string[]> {
-    const user = await this.findById(id);
-    return user.preferredSources ?? [];
-  }
-
-  async updateUserPreferences(
+  updateUserPreferences(
     id: number,
     updateUserPreferencesDto: UpdateUserPreferencesDto,
-  ): Promise<string[]> {
-    await this.findById(id);
-    const updatedPreferences = await this.prisma.user.update({
-      where: { id },
-      data: { preferredSources: updateUserPreferencesDto.preferredSources },
-    });
-    return updatedPreferences.preferredSources ?? [];
-  }
+  ): Promise<string[]>;
 }
+export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
